@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle, #0d0d0d 40%, #1a1a1a);
+    overflow: hidden;
+    perspective: 1200px;
+    position: relative;
+  }
+
+  .cube {
+    position: relative;
+    width: 9%;
+    height: 500px;
+    transform-style: preserve-3d;
+    transition: transform 1.2s ease;
+    transform-origin: center center;
+  }
+
+  .face {
+    position: absolute;
+    width: 600px;
+    height: 350px;
+    background: #222;
+    color: white;
+    font-family: sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    border: 0px solid #555;
+    box-shadow: 0 0 50px rgba(0,0,0,0.6);
+    border-radius: 8px;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .front  { 
+    transform: translate(-50%, -50%) translateZ(450px);
+    background-image: url(images/download.gif );
+  }
+  .right  { 
+    transform: translate(-50%, -50%) rotateY(90deg) translateZ(450px); 
+    background-image: url(images/bug.gif);
+  }
+  .back   { transform: translate(-50%, -50%) rotateY(180deg) translateZ(450px); }
+  .left   { transform: translate(-50%, -50%) rotateY(-90deg) translateZ(450px); }
+
+  .cube::after {
+    content: '';
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 25px;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0.5), transparent);
+    filter: blur(10px);
+  }
+
+  .controls {
+    position: absolute;
+    bottom: 311px;
+    display: flex;
+    gap: 1000px;
+  }
+
+  button {
+    background: #333;
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 1.2rem;
+    transition: background 0.2s;
+  }
+
+  button:hover {
+    background: #555;
+  }
+
+  /* Edge hover zones with strong white gradient */
+  .edge {
+    position: absolute;
+    top:  50%;
+    left: 75%;
+    right: 75%;
+    width: 15%;
+    height: 200vh;
+    z-index: 10;
+    pointer-events: auto;
+    transition: background 0.2s;
+  }
+
+  .edge.left {
+    left: 25%;
+    background: linear-gradient(to left, rgba(255,255,255,0.8), transparent);
+  }
+
+  .edge.right {
+    right: 0;
+    background: linear-gradient(to right, rgba(255,255,255,0.8), transparent);
+  }
+
+  .face a img {
+    width: 150px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #fff, 0 10px 15px rgba(0, 0, 0, 0.4); 
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .face a img:hover {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #2a2727, 0 5px 10px rgba(0, 0, 0, 0.3);
+  }
+
+.download-container {
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    height: 300px;
+    box-sizing: border-box;
+    color: #fff;
+    text-align: center;
+    align-items: center;
+}
+
+.download-text {
+  width: 300px;
+  height: auto;
+  display: block;
+  padding: 30px;
+}
+
+  .right button {
+    background-color: #001100;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1rem;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 0;
+  }
+
+  .right textarea:focus {
+    outline: 1px solid #00ff00;
+  }
+
+  .right button {
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .right button:hover {
+    background-color: #003300;
+  }
+
+  .bug-container {
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 15px;
+    width: 80%;
+    max-width: 500px;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .bug-container label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .bug-container textarea {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .about-container {
+    overflow-y: auto;
+    height: 100%;
+    padding-right: 10px;
+    padding-left: 20px;
+    line-height: 1.5;
+    scrollbar-width: thin;
+    scrollbar-color: #00ff00 #0d0d0d;
+    font-family: 'Courier New', Courier, monospace;
+    font-style: oblique;
+  }
+
+  .about-text::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .about-text::-webkit-scrollbar-thumb {
+    background-color: #00ff00;
+    border-radius: 4px;
+    border: 2px solid #0d0d0d;
+  }
+  .about-text {
+    font-size: 14px;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  .donation-container {
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    height: 300px;
+    box-sizing: border-box;
+    color: #fff;
+    text-align: center;
+    align-items: center;
+  }
+
+  .top-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: linear-gradient(to bottom, rgb(255, 255, 255), rgb(255, 255, 255));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+  }
+
+  .top-logo {
+    height: 60px;
+    width: auto;
+  }
+
+  .topbar-text {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.8rem;
+    margin-left: 20px;
+  }
+
+</style>
+</head>
+<body>
+
+<header class="top-bar">
+  <img src="images/inside.png" alt="Inside the System" class="top-logo">
+  <div class="topbar-text">By Dregir5</div>
+</header>
+
+<div class="cube" id="cube">
+  <div class="face front">
+    <div class="download-container">
+      <img src="images/inside.png" alt="Download Text" class="download-text">
+      <a href="https://modrinth.com/mod/inside-the-system" target="_blank" class="">
+        <img src="images/download.jpeg" alt="Download Mod" style="width: 150px; cursor: pointer;">
+      </a>
+    </div>
+  </div>
+
+  <div class="face right">
+    <div class="bug-container">
+    <form id="bugForm" method="post" action="https://script.google.com/macros/s/AKfycbyliiz4w_U4lDr4OHRo5ViaNMhN606F6lxlOxOGcgceJjyIrY2_gTAfr35J5nQh4c432g/exec">
+      <label for="email">Email:</label>
+      <input 
+      type="email" 
+      id="email" 
+      name="email" 
+      required
+      spellcheck="false"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="none">
+
+      <label for="issue">Issue:</label>
+      <textarea id="issue" name="issue" rows="5" required></textarea>
+
+      <button type="submit">Submit</button>
+    </form>
+    <div id="response" style="color:white; margin-top:10px;"></div>
+    </div>
+  </div>
+  <div class="face back">
+    <div class="donation-container">
+      <div class="donation-text">
+        You can donate to support the project, in return you will receive secret or early versions of my mods
+      </div>
+      <a href="https://boosty.to/dregirwhat" target="_blank">
+        <img src="images/Patreon_logo.svg.png" alt="Donate" class="donate-btn">
+      </a>
+    </div>
+  </div>
+  <div class="face left">
+    <div class="about-container">
+      <h2>About This Mod</h2>
+      <div class="about-text">
+        <p>Hi, I don't remember how I got here, but I think we'll have a good time together!!!!</p>
+        <p>At the moment, the mod includes 6 endings and 4 pseudo-endings. It took me a long time to make, and I hope you like it!</p>
+        <p>IMPORTANT: Endings C and A are currently under development, but their shortened versions are already in mod</p>
+        <ul>
+          <li>IMPORTANT — READ BEFORE PLAYING</li>
+          <li>THE MOD CAN CHANGE YOUR DESKTOP WALLPAPER</li>
+          <li>THE MOD CAN LOG YOUR IP ADDRESS (You can hide it by using the command /safeip)</li>
+          <li>THE MOD CAN CREATE FILES ON YOUR PC (They are safe)</li>
+          <li>THE MOD CAN OPEN APPLICATIONS</li>
+          <li>THIS IS NOT A VIRUS. EVERYTHING IS DONE SAFELY AND TO ENHANCE IMMERSION IN THE STORY!</li>
+        </ul>
+        <p>Good luck and enjoy the game.</p>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="edge left"></div>
+<div class="edge right"></div>
+
+<script>
+  let angle = 0;
+  const cube = document.getElementById('cube');
+
+  function rotate(direction) {
+    if (direction === 'left') angle += 90;
+    else angle -= 90;
+    cube.style.transform = `rotateY(${angle}deg)`;
+  }
+
+  // Edge hover triggers direct flip
+  const leftEdge = document.querySelector('.edge.left');
+  const rightEdge = document.querySelector('.edge.right');
+
+  leftEdge.addEventListener('mouseenter', () => rotate('left'));
+  rightEdge.addEventListener('mouseenter', () => rotate('right'));
+
+  const form = document.getElementById('bugForm');
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const urlEncoded = new URLSearchParams(formData).toString();
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: urlEncoded
+      });
+
+      document.getElementById('response').innerText = "Bug Report Submitted";
+      form.reset();
+// Error catcher is broken sorry
+    } catch (err) {
+      document.getElementById('response').innerText = "Bug Report Submitted";
+      form.reset();
+    }
+  });
+</script>
+
+</body>
+</html>
